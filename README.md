@@ -22,3 +22,6 @@ ATM Details:
 * 1 cartridge has about 2000 pieces
 * considered low on cash when falls below 25% of capacity (threshold)
 * 350 ATMS total
+
+optimiser formula:
+minimize  w1·(trips) + w2·(idle cash × days) + w3·(stockout risk)
