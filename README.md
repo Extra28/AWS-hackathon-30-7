@@ -12,13 +12,13 @@ Business Constraints:
 * Less than 190 trips per day across all ATMs
 * ATMs cannot be replenished more than once a day
 * Priority  mix requirement:
-    * P0 - 65%
-    * P1 - 25%
-    * P2 - 10%
+    * P0 (0000h to 0800h) - 65%
+    * P1 (0800h to 1200h) - 25%
+    * P2 (1200h to 0000h) - 10%
 * If ATM has not been refilled in 14 days, 15th day must have a refill.
 ATM Details:
 * each atm has 4 cartridges, holding either 10, 50 or 100 dollar notes
 * atm capacity is max total cash amt when all 4 cartridges are full
 * 1 cartridge has about 2000 pieces
 * considered low on cash when falls below 25% of capacity (threshold)
-* 
+* 350 ATMS total
