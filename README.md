@@ -25,3 +25,11 @@ ATM Details:
 
 optimiser formula:
 minimize  w1·(trips) + w2·(idle cash × days) + w3·(stockout risk)
+
+run in vscode terminal:
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
+.\.venv\Scripts\python.exe run_pipeline.py
+
+.\.venv\Scripts\python.exe app.py
