@@ -1,0 +1,28 @@
+{
+  "seed": 42,
+  "n_atms": 350,
+  "history_days": 180,
+  "telemetry_days": 30,
+  "sim_days": 30,
+  "notes_per_cartridge": 2000,
+  "cartridges_per_atm": 4,
+  "daily_trip_cap": 189,
+  "adhoc_reserve_trips": 12,
+  "max_refill_gap_days": 15,
+  "refill_eligibility_pct": 0.55,
+  "low_cash_threshold_pct": 0.25,
+  "safety_quantile": 0.9,
+  "planning_horizon_days": 14,
+  "adhoc_response_lag_hours": 6,
+  "fixed_calendar_interval_days": 10,
+  "forecast_quantiles": [0.5, 0.9, 0.95],
+  "priority_mix": { "P0": 0.65, "P1": 0.25, "P2": 0.10 },
+  "window_start_hour": { "P0": 1, "P1": 8, "P2": 12 },
+  "objective_weights": {
+    "idle_cash": 1.0,
+    "load_smoothing": 2.5,
+    "edge_risk": 3.0,
+    "adhoc_trip": 4.0
+  },
+  "db_path": "data/atm_planner.db"
+}

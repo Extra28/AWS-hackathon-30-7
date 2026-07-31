@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATM Cash Replenishment Planner</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>ATM Cash Replenishment Planner</h1>
+    <p id="subtitle">loading&hellip;</p>
+  </div>
+  <div class="bandkey" aria-label="Refill band legend">
+    <span><i class="sw above"></i> above 55%</span>
+    <span><i class="sw inband"></i> refill band 25-55%</span>
+    <span><i class="sw below"></i> below 25%</span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" class="active" data-tab="plan">Day plan</button>
+  <button role="tab" data-tab="fleet">Fleet risk</button>
+  <button role="tab" data-tab="bench">Benchmark</button>
+  <button role="tab" data-tab="model">Model &amp; checks</button>
+  <button role="tab" data-tab="advice">Cartridge advice</button>
+  <button role="tab" data-tab="ask">Ask</button>
+</nav>
+
+<div id="banner" class="banner hidden"></div>
+
+<main>
+  <!-- ------------------------------------------------------------- day plan -->
+  <section id="tab-plan" class="tab active">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="card">
+      <div class="cardhead">
+        <h2>Daily load across the horizon</h2>
+        <span class="hint">bar height = planned visits; dashed line = planned capacity
+          after the ad hoc reserve</span>
+      </div>
+      <div id="loadchart" class="chartwrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="cardhead">
+        <h2>Plan for <span id="planDate">-</span></h2>
+        <div class="controls">
+          <label for="dateSel">Operating day</label>
+          <select id="dateSel"></select>
+        </div>
+      </div>
+      <div id="mixbar"></div>
+      <div id="planTables"></div>
+    </div>
+
+    <div class="card">
+      <div class="cardhead"><h2>Replan with different settings</h2>
+        <span class="hint">changes are applied to a fresh planning run</span></div>
+      <div class="sliders">
+        <label>Safety quantile
+          <select id="cfgQuantile">
+            <option value="0.5">0.50 (median)</option>
+            <option value="0.9" selected>0.90</option>
+            <option value="0.95">0.95 (most cautious)</option>
+          </select>
+        </label>
+        <label>Refill eligibility
+          <input type="number" id="cfgElig" min="0.3" max="0.95" step="0.05" value="0.55">
+        </label>
+        <label>Low-cash floor
+          <input type="number" id="cfgFloor" min="0.05" max="0.5" step="0.05" value="0.25">
+        </label>
+        <label>Ad hoc reserve
+          <input type="number" id="cfgReserve" min="0" max="80" step="2" value="12">
+        </label>
+        <button id="replanBtn" class="primary">Replan</button>
+      </div>
+      <div id="replanOut" class="replanout"></div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- fleet risk -->
+  <section id="tab-fleet" class="tab">
+    <div class="card">
+      <div class="cardhead">
+        <h2>Fleet by urgency</h2>
+        <div class="controls">
+          <input type="search" id="fleetSearch" placeholder="filter by id, name, region">
+          <select id="fleetBand">
+            <option value="">all band states</option>
+            <option value="below">below 25%</option>
+            <option value="inband">in band 25-55%</option>
+            <option value="above">above 55%</option>
+          </select>
+        </div>
+      </div>
+      <div id="fleetTable"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ benchmark -->
+  <section id="tab-bench" class="tab">
+    <div class="card">
+      <div class="cardhead"><h2>Policy comparison</h2>
+        <span class="hint">identical demand and fault draws across all three policies</span>
+      </div>
+      <div id="benchTable"></div>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h2>Trips per simulated day</h2>
+        <span class="hint">solid = total trips, shaded = ad hoc portion</span></div>
+      <div id="benchChart" class="chartwrap"></div>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h2>Ad hoc trips raised under the planner</h2></div>
+      <div id="adhocTable"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ model and checks -->
+  <section id="tab-model" class="tab">
+    <div class="card">
+      <div class="cardhead"><h2>Forecast accuracy on held-out data</h2>
+        <span class="hint">walk-forward holdout, never trained on</span></div>
+      <div id="accTable"></div>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h2>Constraint checks</h2>
+        <span class="hint">verified independently by re-reading the stored schedule</span>
+      </div>
+      <div id="checkTable"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ cartridge advice -->
+  <section id="tab-advice" class="tab">
+    <div class="card">
+      <div class="cardhead"><h2>Denomination remix candidates</h2>
+        <span class="hint">field engineering task, reported separately from the trip plan</span>
+      </div>
+      <div id="adviceTable"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ ask -->
+  <section id="tab-ask" class="tab">
+    <div class="card">
+      <div class="cardhead"><h2>Ask about the plan</h2>
+        <span class="hint">answers are read from the database, not generated</span></div>
+      <form id="askForm" class="askrow">
+        <input id="askInput" type="text" autocomplete="off"
+               placeholder="e.g. how many trips today / why ATM 42 / which ATMs are at risk">
+        <button class="primary" type="submit">Ask</button>
+      </form>
+      <div class="examples">
+        <button class="chip" data-q="how many trips today">how many trips today</button>
+        <button class="chip" data-q="which ATMs are at risk">which ATMs are at risk</button>
+        <button class="chip" data-q="why ATM 42">why ATM 42</button>
+        <button class="chip" data-q="how many compliance trips">compliance trips</button>
+        <button class="chip" data-q="how many ad hoc trips">ad hoc trips</button>
+      </div>
+      <div id="askOut" class="askout"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ATM detail drawer -->
+<aside id="drawer" class="drawer hidden" aria-label="ATM detail">
+  <div class="drawerhead">
+    <h2 id="drawerTitle">ATM</h2>
+    <button id="drawerClose" aria-label="Close">&times;</button>
+  </div>
+  <div id="drawerBody"></div>
+</aside>
+<div id="scrim" class="scrim hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
